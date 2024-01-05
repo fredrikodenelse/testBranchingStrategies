@@ -12,33 +12,10 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-    - name: Dump GitHub context
+    - name: create pull request
+      run: gh pr create -B test -H fas --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
       env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
-    - run: |
-        echo PR #${{ github.event.number }} has been merged (commit ${{ github.sha }})
-        if [ "${{ github.base_ref }}" == 'main' ]; then
-          echo 'target_branch=test' >> $GITHUB_ENV
-          echo 'pr_branch_prefix=tcand' >> $GITHUB_ENV
-        elif [ '${{ github.base_ref }}' == 'test' ]; then
-          echo 'target_branch=prod' >> $GITHUB_ENV
-          echo 'pr_branch_prefix=pcand' >> $GITHUB_ENV
-        fi
-    - uses: actions/checkout@v3
-      with:
-        ref: "${{ env.target_branch }}"
-        fetch-depth: 0
-    - run: |
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git config user.name "${{ github.actor }}"
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v4
-      with:
-          commit-message: Cherry picked contents from (#${{ github.event.number }})
-          title: (To ${{ env.target_branch }}) ${{ github.event.pull_request.title }}
-          body: ${{ github.event.pull_request.body }}
-          branch: ${{ github.head_ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   close_job:
     # this job will only run if the PR has been closed without being merged
