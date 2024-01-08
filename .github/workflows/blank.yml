@@ -1,4 +1,4 @@
-name: Close Pull Request
+name: Auto Cherry-Pick
 
 # only trigger on pull request closed events
 on:
@@ -37,7 +37,7 @@ jobs:
       uses: peter-evans/create-pull-request@v4
       with:
           commit-message: Cherry picked contents from (#${{ github.event.number }})
-          title: (To ${{ env.target_branch }}) ${{ github.event.pull_request.title }}
+          title: ${{ github.event.pull_request.title }}
           body: ${{ github.event.pull_request.body }}
           branch: ${{ env.pr_branch_prefix }}/${{ github.head_ref }}
           labels: 'To ${{ env.target_branch }},Automated PR'
