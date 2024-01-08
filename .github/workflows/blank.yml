@@ -40,7 +40,7 @@ jobs:
           title: ${{ github.event.pull_request.title }}
           body: ${{ github.event.pull_request.body }}
           branch: ${{ env.pr_branch_prefix }}/${{ github.head_ref }}
-          labels: 'To ${{ env.target_branch }},Automated PR'
+          labels: 'To ${{ env.target_branch }}'
   close_job:
     # this job will only run if the PR has been closed without being merged
     if: github.event.pull_request.merged == false
