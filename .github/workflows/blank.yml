@@ -1,7 +1,7 @@
 name: Auto Cherry-Pick
 
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   merge_job:
@@ -20,11 +20,11 @@ jobs:
           echo 'target_branch=1' >> $GITHUB_ENV
           echo 'pr_branch_prefix=tcand' >> $GITHUB_ENV
           
-        elif '2' == '2' && '2' != '0' then
+        elif [ '2' == '2' && '2' != '0' ]; then
           echo 'target_branch=2' >> $GITHUB_ENV
           echo 'pr_branch_prefix=pcand' >> $GITHUB_ENV
           
-        elif '3' == '3' && '3' != '0' then
+        elif [ '3' == '3' && '3' != '0' ]; then
           echo 'target_branch=3' >> $GITHUB_ENV
           echo 'pr_branch_prefix=pcand' >> $GITHUB_ENV
         fi
