@@ -12,11 +12,11 @@ jobs:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
     - run: |
-        if [ ('1' == '0') && ('1' == '0') ]; then
+        if [ '1' == '0' && '1' == '0' ]; then
           echo Neither test-branch-name nor prod-branch-name is set, exiting.
           exit 1
           
-        elif [ ('1' == '1') && ('1' != '0') ]; then
+        elif [ '1' == '1' && '1' != '0' ]; then
           echo 'target_branch=1' >> $GITHUB_ENV
           echo 'pr_branch_prefix=tcand' >> $GITHUB_ENV
           
