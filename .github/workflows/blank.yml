@@ -1,15 +1,10 @@
 name: Auto Cherry-Pick
 
-# only trigger on pull request closed events
 on:
-  pull_request_target:
-    types: [ closed ]
-    branches: [main, test]
+  workflow_dispatch:
 
 jobs:
   merge_job:
-    # this job will only run if the PR has been merged
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
     - name: Dump GitHub context
@@ -17,37 +12,27 @@ jobs:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
     - run: |
-        echo PR #${{ github.event.number }} has been merged (commit ${{ github.sha }})
-        if [ "${{ github.base_ref }}" == 'main' ]; then
-          echo 'target_branch=test' >> $GITHUB_ENV
+        if [ '1' == '0' && '1' == '0' ]; then
+          echo Neither test-branch-name nor prod-branch-name is set, exiting.
+          exit 1
+          
+        elif [ '1' == '1' && '1' != '0' ]; then
+          echo 'target_branch=1' >> $GITHUB_ENV
           echo 'pr_branch_prefix=tcand' >> $GITHUB_ENV
-        elif [ '${{ github.base_ref }}' == 'test' ]; then
-          echo 'target_branch=prod' >> $GITHUB_ENV
+          
+        elif [ '2' == '2' && '2' != '0' ]; then
+          echo 'target_branch=2' >> $GITHUB_ENV
+          echo 'pr_branch_prefix=pcand' >> $GITHUB_ENV
+          
+        elif [ '3' == '3' && '3' != '0' ]; then
+          echo 'target_branch=3' >> $GITHUB_ENV
           echo 'pr_branch_prefix=pcand' >> $GITHUB_ENV
         fi
-    - uses: actions/checkout@v3
-      with:
-        ref: "${{ env.target_branch }}"
-        fetch-depth: 0
     - run: |
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git config user.name "${{ github.actor }}"
-        git cherry-pick --strategy=recursive -X theirs -m 1 ${{ github.sha }}
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
-      with:
-          commit-message: Cherry picked contents from (#${{ github.event.number }})
-          title: ${{ github.event.pull_request.title }}
-          body: ${{ github.event.pull_request.body }}
-          branch: ${{ env.pr_branch_prefix }}/${{ github.head_ref }}
-          labels: 'To ${{ env.target_branch }}'
-  close_job:
-    # this job will only run if the PR has been closed without being merged
-    if: github.event.pull_request.merged == false
-    runs-on: ubuntu-latest
-    steps:
-    - run: |
-        echo PR #${{ github.event.number }} has been closed without being merged
-          
-# $GITHUB_HEAD_REF is source branch
-# $GITHUB_BASE_REF is target branch
+        echo ${{ env.target_branch }}
+        if [ "${{ env.target_branch }}" != "0" ]; then
+          echo "TRAT"
+        elif [ "${{ env.target_branch }}" == "0" ]; then
+          echo "No target branch, exiting."
+          exit 1
+        fi
