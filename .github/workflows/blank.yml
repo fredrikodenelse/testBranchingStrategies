@@ -12,27 +12,27 @@ jobs:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
     - run: |
-        if [ '1' == '0' && '1' == '0' ]; then
+        if '1' == '0' && '1' == '0'  then
           echo Neither test-branch-name nor prod-branch-name is set, exiting.
           exit 1
           
-        elif [ '1' == '1' && '1' != '0' ]; then
+        elif '1' == '1' && '1' != '0' then
           echo 'target_branch=1' >> $GITHUB_ENV
           echo 'pr_branch_prefix=tcand' >> $GITHUB_ENV
           
-        elif [ '2' == '2' && '2' != '0' ]; then
+        elif '2' == '2' && '2' != '0' then
           echo 'target_branch=2' >> $GITHUB_ENV
           echo 'pr_branch_prefix=pcand' >> $GITHUB_ENV
           
-        elif [ '3' == '3' && '3' != '0' ]; then
+        elif '3' == '3' && '3' != '0' then
           echo 'target_branch=3' >> $GITHUB_ENV
           echo 'pr_branch_prefix=pcand' >> $GITHUB_ENV
         fi
     - run: |
         echo ${{ env.target_branch }}
-        if [ "${{ env.target_branch }}" != "0" ]; then
+        if "${{ env.target_branch }}" != "0" then
           echo "TRAT"
-        elif [ "${{ env.target_branch }}" == "0" ]; then
+        elif "${{ env.target_branch }}" == "0" then
           echo "No target branch, exiting."
           exit 1
         fi
