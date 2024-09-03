@@ -1,41 +1,33 @@
-name: Auto Cherry-Pick
+name: Delete old Releases
 
 on:
-  push:
+  workflow_call:
 
 jobs:
-  merge_job:
+  delete-old-releases:
     runs-on: ubuntu-latest
     steps:
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
-    - run: |
-        if [ "1" == "0" ]; then
-          if [ "1" == "0" ]; then
-            echo Neither test-branch-name nor prod-branch-name is set, exiting.
-            exit 1
-          fi
-        fi
-          
-        if [ '1' == '1' && '1' != '0' ]; then
-          echo 'target_branch=1' >> $GITHUB_ENV
-          echo 'pr_branch_prefix=tcand' >> $GITHUB_ENV
-          
-        elif [ '2' == '2' && '2' != '0' ]; then
-          echo 'target_branch=2' >> $GITHUB_ENV
-          echo 'pr_branch_prefix=pcand' >> $GITHUB_ENV
-          
-        elif [ '3' == '3' && '3' != '0' ]; then
-          echo 'target_branch=3' >> $GITHUB_ENV
-          echo 'pr_branch_prefix=pcand' >> $GITHUB_ENV
-        fi
-    - run: |
-        echo ${{ env.target_branch }}
-        if "${{ env.target_branch }}" != "0" then
-          echo "TRAT"
-        elif "${{ env.target_branch }}" == "0" then
-          echo "No target branch, exiting."
-          exit 1
-        fi
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Remove old releases
+        run: |
+          gh release list --limit 500 --json 'isPrerelease,name,tagName' \
+          | while read releases; do
+            for row in $(echo "${releases}" | jq -r '.[] | @base64'); do
+              _jq() {
+               echo ${row} | base64 --decode | jq -r ${1}
+              }
+              if [[ "$(_jq '.name')" =~ ^"${{ inputs.release-name-prefix }}" ]]; then
+                echo "$(_jq '.tagName')" - "${{ needs.createversionandtag.outputs.tag-name }}"
+                if [[ ! "$(_jq '.tagName')" == "${{ needs.createversionandtag.outputs.tag-name }}" ]]; then
+                  echo Deleting Release $(_jq '.name');
+                  
+                  --gh release delete -y "$(_jq '.tagName')";
+                  
+                fi
+              fi
+            done
+          done
+        env:
+          GH_TOKEN: ${{ secrets.ELSE_CORE_NUGET }}
