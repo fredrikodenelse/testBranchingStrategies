@@ -18,12 +18,10 @@ jobs:
               _jq() {
                echo ${row} | base64 --decode | jq -r ${1}
               }
-              if [[ "$(_jq '.name')" =~ ^"${{ inputs.release-name-prefix }}" ]]; then
-                echo "$(_jq '.tagName')" - "${{ needs.createversionandtag.outputs.tag-name }}"
-                if [[ ! "$(_jq '.tagName')" == "${{ needs.createversionandtag.outputs.tag-name }}" ]]; then
+              if [[ "$(_jq '.name')" =~ ^"Release" ]]; then
+                echo "$(_jq '.tagName')" - "1.0.103"
+                if [[ ! "$(_jq '.tagName')" == "1.0.103" ]]; then
                   echo Deleting Release $(_jq '.name');
-                  
-                  --gh release delete -y "$(_jq '.tagName')";
                   
                 fi
               fi
