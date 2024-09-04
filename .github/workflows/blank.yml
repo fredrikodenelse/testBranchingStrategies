@@ -12,15 +12,12 @@ jobs:
           fetch-depth: 0
       - name: Remove old releases
         run: |
-          gh release list --limit 500 --json 'isPrerelease,name,tagName' \
+          gh release list --limit 30 --json 'isPrerelease,name,tagName' --order desc \
           | while read releases; do
             for row in $(echo "${releases}" | jq -r '.[] | @base64'); do
               _jq() {
                echo ${row} | base64 --decode | jq -r ${1}
               }
-              
-              echo "$(_jq '.name')"
-              
               if [[ "$(_jq '.name')" =~ ^"Release" ]]; then
                 echo "$(_jq '.tagName')" - "1.0.103"
                 if [[ ! "$(_jq '.tagName')" == "1.0.103" ]]; then
