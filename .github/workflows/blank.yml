@@ -20,20 +20,16 @@ jobs:
           gh release list --limit 30 --json 'isPrerelease,name,tagName' --order desc \
           | while read releases; do
             for row in $(echo "${releases}" | jq -r '.[] | @base64'); do
-              releaseIndex+=1
-
-              echo "$releaseIndex"
-              echo "${{ inputs.old-versions-to-keep }}"
-              
-              if [ "$releaseIndex" -gt "${{ inputs.old-versions-to-keep }}" ]; then
-                _jq() {
-                 echo ${row} | base64 --decode | jq -r ${1}
-                }
-                if [[ "$(_jq '.name')" =~ ^"Release" ]]; then
-                  echo "$(_jq '.tagName')" - "1.0.103"
+              _jq() {
+               echo ${row} | base64 --decode | jq -r ${1}
+              }
+              if [[ "$(_jq '.name')" =~ ^"Release" ]]; then
+                releaseIndex+=1
+                echo "$(_jq '.tagName')" - "1.0.103"
+                echo "$releaseIndex" - "${{ inputs.old-versions-to-keep }}"
+                if [ "$releaseIndex" -gt "${{ inputs.old-versions-to-keep }}" ]; then
                   if [[ ! "$(_jq '.tagName')" == "1.0.103" ]]; then
                     echo Deleting Release $(_jq '.name');
-                    
                   fi
                 fi
               fi
