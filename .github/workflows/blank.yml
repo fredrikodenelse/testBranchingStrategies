@@ -31,4 +31,4 @@ jobs:
             done
           done
         env:
-          GH_TOKEN: ${{ secrets.ELSE_CORE_NUGET }}
+          GH_TOKEN: ${{ secrets.TOKEN }}
