@@ -16,8 +16,8 @@ jobs:
           fetch-depth: 0
       - name: Remove old releases
         run: |
+          declare -i releaseIndex=0;
           gh release list --limit 30 --json 'isPrerelease,name,tagName' --order desc \
-          declare -i releaseIndex=0
 
           | while read releases; do
             for row in $(echo "${releases}" | jq -r '.[] | @base64'); do
