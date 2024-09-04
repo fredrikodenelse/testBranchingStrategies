@@ -5,7 +5,6 @@ on:
     inputs:
       old-versions-to-keep:
         default: '1'
-        type: number
 
 jobs:
   delete-old-releases:
