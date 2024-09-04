@@ -18,7 +18,6 @@ jobs:
         run: |
           declare -i releaseIndex=0;
           gh release list --limit 30 --json 'isPrerelease,name,tagName' --order desc \
-
           | while read releases; do
             for row in $(echo "${releases}" | jq -r '.[] | @base64'); do
               releaseIndex+=1
